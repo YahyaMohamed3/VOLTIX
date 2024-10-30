@@ -25,17 +25,17 @@
                     <div class="collapse navbar-collapse" id="navbarNav" style="margin-top:-40px;">
                         <ul class="navbar-nav ms-auto">
                             <li class="nav-item">
-                                <a class="nav-link" href="">Login</a>
+                                <a class="nav-link" href="#">Login</a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-light" href="#" role="button">Get Started</a>
+                                <a class="btn btn-light" href="{% url 'register' %}" role="button">Get Started</a>
                             </li>
                         </ul>
                     </div>
                 </div>
             </nav>
         </div>
-        <div class="small-logo"style="display:flex; justify-content:center; top:-100px; position: relative;">
+        <div class="small-logo"style="display:flex; justify-content:center; top:-75px; position: relative;">
         <img src="static\users\images\small-logo.png"
         height="200px"
         width="200px"
@@ -65,14 +65,16 @@
                 <div class="col-md-6">
                     <div class="box1">
                         <div class="fade-in-scroll">
+                            <div class="frame">
                         <img 
                             src="/static/users/images/original-0ac636df-b963-4372-b278-80c817ba4206.webp" 
                             alt="Description of Image" 
                             width="500" 
                             height="500" 
-                            style="border-radius: 30px;"
+                            style="border-radius: 30px; margin-top: 4rem;"
                             class="img-fluid"
                         >
+                    </div>
                     </div>
                     </div>
                 </div>
@@ -90,7 +92,7 @@
                             <p>
                             Real-Time Insights: Gain a 360-degree view of market data, bot performance, and strategy adaptation with a sleek, interactive dashboard.</p>
                             <div style="display: flex; justify-content: center;">
-                                <a class="btn btn-light" href="#" role="button">Get Started</a>
+                                <a class="btn btn-light" href="{% url 'register'%}" role="button">Get Started</a>
                             </div>
                             </div>
                     </div>

@@ -20,7 +20,7 @@ body{
   .gradient-text {
     background: linear-gradient(45deg, #333333, #cccccc, #ffffff);
     -webkit-background-clip: text; /* For WebKit-based browsers */
-    background-clip: text; /* Standard property */
+    background-clip: text; 
     -webkit-text-fill-color: transparent;
 }
 .fade-in-scroll {
@@ -57,4 +57,11 @@ p{
 h5 i {
     font-size: 1.2rem; /* adjust as needed */
     color: #fff; /* match your theme */
+}
+
+.frame{
+    background: linear-gradient(#000, #151414);
+    border: 2px solid #303030ba;
+    border-radius:35px;
+    height:500px;
 }

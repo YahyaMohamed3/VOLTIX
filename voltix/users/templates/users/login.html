@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voltix - Sign up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            background: #000000;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #cecece, #9a9a9a, #e8e8e8);
+            background-size: 200% 100%; /* Ensures the gradient has enough width to animate */
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-animation 5s ease-in-out infinite alternate;
+            }
+        .form-control, .btn {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus, .btn:focus, .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.2);
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            height: 3rem;
+        }
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        label {
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        .password-requirements {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+        @keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
+}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <nav class="navbar navbar-expand-lg" style="background-color: transparent;" data-bs-theme="dark">
+            <div class="container-fluid">
+                <div class="logo" style="height: 175px; width: 175; max-height: 175; margin-top:-40px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="175" zoomAndPan="magnify" viewBox="0 0 375 374.999991" height="175" preserveAspectRatio="xMidYMid meet" version="1.0"><defs><g/><clipPath id="f1500a1e74"><path d="M 109 151 L 157 151 L 157 245 L 109 245 Z M 109 151 " clip-rule="nonzero"/></clipPath><clipPath id="11a9bae15a"><path d="M 90.222656 167.761719 L 114.046875 147.386719 L 180.429688 225.011719 L 156.605469 245.390625 Z M 90.222656 167.761719 " clip-rule="nonzero"/></clipPath><clipPath id="9aa170750a"><path d="M 90.222656 167.761719 L 114.046875 147.386719 L 180.429688 225.011719 L 156.605469 245.390625 Z M 90.222656 167.761719 " clip-rule="nonzero"/></clipPath></defs><g clip-path="url(#f1500a1e74)"><g clip-path="url(#11a9bae15a)"><g clip-path="url(#9aa170750a)"><path fill="#fafafa" d="M 109.808594 151.136719 C 114.949219 170.324219 120.089844 189.511719 125.230469 208.703125 C 128.714844 205.726562 132.195312 202.746094 135.675781 199.769531 C 142.699219 214.726562 149.726562 229.683594 156.75 244.640625 C 151.417969 222.46875 146.085938 200.300781 140.753906 178.132812 C 136.664062 181.628906 132.574219 185.125 128.488281 188.625 C 122.261719 176.128906 116.035156 163.632812 109.808594 151.136719 " fill-opacity="1" fill-rule="nonzero"/></g></g></g><g fill="#fafafa" fill-opacity="1"><g transform="translate(49.410335, 218.50907)"><g><path d="M 52.546875 -52.84375 L 29.140625 0 L 23.625 0 L 0.21875 -52.84375 L 6.265625 -52.84375 L 26.5 -6.953125 L 46.890625 -52.84375 Z M 52.546875 -52.84375 "/></g></g></g><g fill="#fafafa" fill-opacity="1"><g transform="translate(102.109164, 218.50907)"><g><path d="M 31.703125 0.453125 C 26.472656 0.453125 21.726562 -0.710938 17.46875 -3.046875 C 13.21875 -5.390625 9.894531 -8.597656 7.5 -12.671875 C 5.113281 -16.753906 3.921875 -21.335938 3.921875 -26.421875 C 3.921875 -31.503906 5.113281 -36.082031 7.5 -40.15625 C 9.894531 -44.238281 13.21875 -47.445312 17.46875 -49.78125 C 21.726562 -52.125 26.472656 -53.296875 31.703125 -53.296875 C 36.941406 -53.296875 41.660156 -52.140625 45.859375 -49.828125 C 50.066406 -47.515625 53.378906 -44.304688 55.796875 -40.203125 C 58.210938 -36.097656 59.421875 -31.503906 59.421875 -26.421875 C 59.421875 -21.335938 58.210938 -16.742188 55.796875 -12.640625 C 53.378906 -8.546875 50.066406 -5.335938 45.859375 -3.015625 C 41.660156 -0.703125 36.941406 0.453125 31.703125 0.453125 Z M 31.703125 -4.53125 C 35.878906 -4.53125 39.65625 -5.472656 43.03125 -7.359375 C 46.40625 -9.242188 49.046875 -11.859375 50.953125 -15.203125 C 52.867188 -18.554688 53.828125 -22.296875 53.828125 -26.421875 C 53.828125 -30.546875 52.867188 -34.28125 50.953125 -37.625 C 49.046875 -40.976562 46.40625 -43.597656 43.03125 -45.484375 C 39.65625 -47.367188 35.878906 -48.3125 31.703125 -48.3125 C 27.523438 -48.3125 23.738281 -47.367188 20.34375 -45.484375 C 16.945312 -43.597656 14.28125 -40.976562 12.34375 -37.625 C 10.40625 -34.28125 9.4375 -30.546875 9.4375 -26.421875 C 9.4375 -22.296875 10.40625 -18.554688 12.34375 -15.203125 C 14.28125 -11.859375 16.945312 -9.242188 20.34375 -7.359375 C 23.738281 -5.472656 27.523438 -4.53125 31.703125 -4.53125 Z M 31.703125 -4.53125 "/></g></g></g><g fill="#fafafa" fill-opacity="1"><g transform="translate(165.453464, 218.50907)"><g><path d="M 8.609375 -52.84375 L 14.1875 -52.84375 L 14.1875 -4.828125 L 43.796875 -4.828125 L 43.796875 0 L 8.609375 0 Z M 8.609375 -52.84375 "/></g></g></g><g fill="#fafafa" fill-opacity="1"><g transform="translate(209.922823, 218.50907)"><g><path d="M 18.875 -48.015625 L 0.296875 -48.015625 L 0.296875 -52.84375 L 43.03125 -52.84375 L 43.03125 -48.015625 L 24.46875 -48.015625 L 24.46875 0 L 18.875 0 Z M 18.875 -48.015625 "/></g></g></g><g fill="#fafafa" fill-opacity="1"><g transform="translate(253.259688, 218.50907)"><g><path d="M 8.609375 -52.84375 L 14.1875 -52.84375 L 14.1875 0 L 8.609375 0 Z M 8.609375 -52.84375 "/></g></g></g><g fill="#fafafa" fill-opacity="1"><g transform="translate(276.060615, 218.50907)"><g><path d="M 41.75 0 L 24.6875 -23.25 L 7.703125 0 L 1.28125 0 L 21.359375 -27.1875 L 2.5625 -52.84375 L 8.984375 -52.84375 L 24.921875 -31.25 L 40.765625 -52.84375 L 46.8125 -52.84375 L 28.09375 -27.328125 L 48.25 0 Z M 41.75 0 "/></g></g></g></svg>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <main style="margin-bottom:10rem;">
+        <div class="container" style="margin-bottom: 4rem;">
+            <h1 class="gradient-text" style="font-size: 60px; margin-bottom: 2rem; text-align: center;">
+                Your Competitive Edge in High-Frequency Trading
+            </h1>
+            <div class="container" style="width:auto; text-align: center;">
+                <p style="color: rgba(212, 212, 212, 0.893);">Voltix isn't just a simulation tool; it's a high-powered innovation platform for trading intelligence. With Voltix, your firm can stay on the leading edge of HFT, leveraging AI to create adaptive, resilient, and high-performing strategies that thrive in fast-moving markets.</p>
+            </div>
+        </div>
+        <div class="container" style="display: flex; justify-content: center;">
+            <div class="card" style="width: 40rem; height: 35rem; background-color: #2121216c; border: 2px solid rgba(152, 152, 152, 0.382); padding: 2rem; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3), -3px -3px 5px rgba(255, 255, 255, 0.202); border-radius: 35px;">
+                <h2 style="text-align: center; color: white; margin-bottom:3rem;">Login</h2>
+                <form method="POST" id="loginForm" action="{% url 'login'%}" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" class="form-control" name="email" placeholder="john@example.com" aria-label="Email Address" autocomplete="off" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" class="form-control" name="password" aria-label="Password" required>
+                        <div class="invalid-feedback">Invalid Credntials.</div>
+                    </div>
+                    {% if form.errors %}
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    {% endif %}
+                    <button type="submit" class="btn btn-light" style="width: 100%; height: 3rem; line-height: 35px; border-radius:50px; margin-top: 3rem;">Sign Up</button>
+                </form>
+                <div style="display: flex; justify-content: center; margin-top: 2rem;">
+                    <p style="color: white;">Don't have an account?<a href="{% url 'register' %}" id="register"style="color: rgba(255, 255, 255, 0.503);">Sign Up</a></p>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    </main>
+
+    <footer class="text-center mt-5 text-light">
+        <p>&copy; 2024 Voltix. All rights reserved.</p>
+    </footer>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+    const loginForm = document.getElementById('loginForm'); 
+    
+    loginForm.addEventListener('submit', function(event) {
+        event.preventDefault(); 
+        // Retrieve the values from the input fields
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        const data = {
+            email: email,
+            password: password
+        };
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        fetch('/login/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken 
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+               password.classList.add('is-invalid');
+            }
+            return response.json(); 
+        })
+        .then(data => {
+            console.log('Success:', data);
+        
+        })
+        .catch(error => {
+            console.error('Error:', error);
+           
+        });
+    });
+});
+
+    </script>    
+</body>
+</html>

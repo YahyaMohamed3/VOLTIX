@@ -76,7 +76,7 @@
         <div class="container" style="display: flex; justify-content: center;">
             <div class="card" style="width: 40rem; height: 35rem; background-color: #2121216c; border: 2px solid rgba(152, 152, 152, 0.382); padding: 2rem; box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3), -3px -3px 5px rgba(255, 255, 255, 0.202); border-radius: 35px;">
                 <h2 style="text-align: center; color: white; margin-bottom:3rem;">Login</h2>
-                <form method="POST" id="loginForm" action="{% url 'login'%}" class="needs-validation" novalidate>
+                <form method="POST" id="loginForm" action="{% url 'login'%}" novalidate>
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="email">Email Address</label>
@@ -85,8 +85,8 @@
                     <div class="mb-3">
                         <label for="password">Password</label>
                         <input type="password" id="password" class="form-control" name="password" aria-label="Password" required>
-                        <div class="invalid-feedback">Invalid Credntials.</div>
                     </div>
+                    <div class="alert alert-danger" style="display: none;" id="error">Invalid Credntials</div>
                     {% if form.errors %}
                         {% for field, errors in form.errors.items %}
                             {% for error in errors %}
@@ -94,10 +94,10 @@
                             {% endfor %}
                         {% endfor %}
                     {% endif %}
-                    <button type="submit" class="btn btn-light" style="width: 100%; height: 3rem; line-height: 35px; border-radius:50px; margin-top: 3rem;">Sign Up</button>
+                    <button type="submit" id="loginButton" class="btn btn-light" style="width: 100%; height: 3rem; line-height: 35px; border-radius:50px; margin-top: 3rem;" disabled>Login</button>
                 </form>
                 <div style="display: flex; justify-content: center; margin-top: 2rem;">
-                    <p style="color: white;">Don't have an account?<a href="{% url 'register' %}" id="register"style="color: rgba(255, 255, 255, 0.503);">Sign Up</a></p>
+                    <p style="color: white;">Don't have an account? <a href="{% url 'register' %}" id="register"style="color: rgba(255, 255, 255, 0.503);">Sign Up</a></p>
                 </div>
             </div>
         </div>
@@ -109,48 +109,61 @@
     </footer>
     <meta name="csrf-token" content="{{ csrf_token }}">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-    const loginForm = document.getElementById('loginForm'); 
-    
-    loginForm.addEventListener('submit', function(event) {
-        event.preventDefault(); 
-        // Retrieve the values from the input fields
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        const data = {
-            email: email,
-            password: password
-        };
-
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        fetch('/login/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken 
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (!response.ok) {
-               password.classList.add('is-invalid');
-            }
-            return response.json(); 
-        })
-        .then(data => {
-            console.log('Success:', data);
+            const loginButton = document.getElementById('loginButton');
+            const emailField = document.getElementById("email");
+            const passwordField = document.getElementById("password");
         
-        })
-        .catch(error => {
-            console.error('Error:', error);
-           
+            function toggleButtonState() {
+                if (emailField.value.trim() && passwordField.value.trim()) {
+                    loginButton.disabled = false;
+                } else {
+                    loginButton.disabled = true;
+                }
+            }
+        
+            // Add input event listeners to enable/disable the login button
+            emailField.addEventListener("input", toggleButtonState);
+            passwordField.addEventListener("input", toggleButtonState);
+        
+            const loginForm = document.getElementById('loginForm');
+            
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault(); 
+                const email = emailField.value;
+                const password = passwordField.value;
+        
+                const data = {
+                    email: email,
+                    password: password
+                };
+        
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+                fetch('/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken 
+                    },
+                    body: JSON.stringify(data)
+                })
+                .then(response => response.json())  // Parse the response as JSON
+                .then(data => {
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;  // Perform the redirection
+                    } else {
+                        document.getElementById('error').style.display = 'block';  // Show error if no redirect URL
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('error').style.display = 'block';  // Show error if fetch fails
+                });
+            });
         });
-    });
-});
-
-    </script>    
+        </script>
 </body>
 </html>

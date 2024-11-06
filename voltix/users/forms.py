@@ -10,5 +10,5 @@ class CustomUserCreationForm(UserCreationForm):
         fields = ("email", "first_name", "last_name", "company_name", "date_of_birth")
 
 class CustomLoginForm(AuthenticationForm):
-    username = forms.CharField(label="email")
+    email = forms.CharField(label="email")
     password = forms.CharField(label="Password" , widget=forms.PasswordInput)

@@ -1,11 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.contrib.auth import login 
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login , authenticate
 from .forms import CustomUserCreationForm
-from django.contrib.auth.forms import AuthenticationForm
 from .models import CustomUser
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
+from django.urls import reverse
 import json
 
 # Create your views here.
@@ -17,8 +16,8 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request)
-            return redirect('landing_page')
+            auth_login(request , user)
+            return redirect(reverse('trading:dashboard'))
         else:
             print(form.errors)
     else:
@@ -28,11 +27,21 @@ def register(request):
 
 def login(request):
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            auth_login(request, user)
-            return redirect('landing_page')
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+            password = data.get("password")
+
+            user = authenticate(request, email=email, password=password)
+            if user is not None:
+                auth_login(request, user)
+                print(reverse('trading:dashboard'))
+                return JsonResponse({'redirect_url': reverse('trading:dashboard')})
+            else:
+                return JsonResponse({'error': 'Invalid credentials'}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON format'}, status=400)
     else:
         return render(request , "users/login.html")
 

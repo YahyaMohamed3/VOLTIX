@@ -1,0 +1,40 @@
+{% extends "trading/base.html" %}
+
+{% block title %}
+Dashboard - Voltix
+{% endblock %}
+
+{% block content %}
+  <div class="container" style="display: felx; justify-content:center; padding:15px;">
+    <div class="row">
+      <div class="col-sm-6 mb-3 mb-sm-0">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Historical Simulation</h4>
+            <p class="card-text">
+            <h5>Learn from past:</h5>
+                <p style="padding-bottom: 10px;">Users can analyze how specific events(eg., earnings reports) , macroeconomic news, or crashes</p>
+              </p>
+              <h5>Backtest Strategies:</h5>
+                <p style="padding-bottom: 10px;">Users can test their trading strategies in known market conditions without the unpredictability of live markets.</p>
+              </p>
+              <h5>Control Over Variables:</h5>
+                <p>Users can modify conditions like volatility or liquidity to simulate “what-if” scenarios</p>
+
+            <a href="#" class="btn btn-outline-dark">Historical</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Live Simulation</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <a href="#" class="btn btn-outline-dark">Live</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+{% endblock %}

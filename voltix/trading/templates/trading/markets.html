@@ -1,14 +1,16 @@
 {% extends "trading/base.html" %}
 
 {% block title %}
-Dashboard - Voltix
+Voltix - Dashboard
 {% endblock %}
 
 {% block content %}
   <div class="container" style="display: felx; justify-content:center; padding:15px;">
+    <h2 style="text-align: center;">Simulations</h2>
+    <p style="text-align: center; margin-bottom: 4rem;">Voltix simulations offer a cutting-edge platform to explore high-frequency trading dynamics in a risk-free environment. Whether analyzing historical market events or engaging in real-time trading with live data, Voltix provides realistic scenarios to test, refine, and optimize strategies. Its advanced features, like customizable variables and AI-driven agents, make it the perfect tool for mastering market complexities and building robust trading systems.</p>
     <div class="row">
       <div class="col-sm-6 mb-3 mb-sm-0">
-        <div class="card">
+        <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
           <div class="card-body">
             <h4 class="card-title">Historical Simulation</h4>
             <p class="card-text">
@@ -21,20 +23,28 @@ Dashboard - Voltix
               <h5>Control Over Variables:</h5>
                 <p>Users can modify conditions like volatility or liquidity to simulate “what-if” scenarios</p>
 
-            <a href="#" class="btn btn-outline-dark">Historical</a>
+            <a href="{% url 'trading:assets' %}" class="btn btn-outline-dark">Historical</a>
           </div>
         </div>
       </div>
       <div class="col-sm-6">
-        <div class="card">
+        <div class="card" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
           <div class="card-body">
             <h5 class="card-title">Live Simulation</h5>
-            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+            <p class="card-text">
+              <h5>Trade in Real-Time:</h5>
+              <p style="padding-bottom: 10px;">Experience dynamic, ever-changing market conditions using live data streams, mirroring actual trading environments.</p>
+          </p>
+          <h5>Test Strategy Adaptability:</h5>
+            <p style="padding-bottom: 10px;">Refine your strategies on the go by reacting to current trends, news, and real-world market events.</p>
+          </p>
+          <h5>Prepare for the Real Market:</h5>
+            <p>Gain confidence and decision-making skills in a live setting without financial risks.</p>
+            </p>
             <a href="#" class="btn btn-outline-dark">Live</a>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 {% endblock %}

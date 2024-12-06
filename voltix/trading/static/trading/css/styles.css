@@ -8,3 +8,30 @@ body{
 .navbar-logo{
     padding: 10px;
 }
+
+.search-container {
+    text-align: center;
+    margin-top: 50px;
+    margin-bottom:50px;;
+}
+
+.row-cols-4{
+    margin-bottom:3rem;
+}
+.logo-ticker{
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    margin-bottom: 4rem; 
+    position: relative; 
+    bottom: 15px;
+}
+.ticker_name{
+    height: 4rem;
+}
+.text_symbol{
+    margin-top: 1rem; 
+    font-size: 20px; 
+    text-align: center; 
+    margin-right: 1.5rem;
+}

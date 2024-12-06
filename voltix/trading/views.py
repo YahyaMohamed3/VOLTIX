@@ -13,3 +13,7 @@ def dashboard(request):
 @login_required 
 def markets(request):
     return render(request , "trading/markets.html")
+
+@login_required
+def assets(request):
+    return render(request , "trading/assets.html")

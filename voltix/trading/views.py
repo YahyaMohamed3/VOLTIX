@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 from django.urls import reverse
 import requests
-
+from trading.models import PopularAssets
 
 @login_required
 def dashboard(request):
@@ -16,4 +16,6 @@ def markets(request):
 
 @login_required
 def assets(request):
-    return render(request , "trading/assets.html")
+    popular_assets = PopularAssets.objects.all()
+    print(popular_assets)
+    return render(request , "trading/assets.html" , {"popular_assets": popular_assets})

@@ -131,16 +131,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-
-# Optional: Timezone and task settings
-CELERY_TIMEZONE = 'UTC'
-CELERY_BEAT_SCHEDULE = {
-    'fetch_live_prices': {
-        'task': 'trading.tasks.fetch_live_price_task',
-        'schedule': 60.0,  # every 60 seconds (1 minute)
-        'args': (['AAPL', 'GOOGL', 'MSFT'],)  # symbols to track
-    },
-}

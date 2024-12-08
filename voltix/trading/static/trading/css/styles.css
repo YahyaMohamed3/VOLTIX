@@ -18,20 +18,42 @@ body{
 .row-cols-4{
     margin-bottom:3rem;
 }
-.logo-ticker{
-    display: flex; 
-    justify-content: center;
-    align-items: center; 
-    margin-bottom: 4rem; 
-    position: relative; 
-    bottom: 15px;
+/* Container for logo, company name, and ticker symbol */
+.logo-ticker {
+    display: flex;
+    justify-content: flex-start; /* Align items to the left */
+    align-items: center; /* Adjust spacing between cards */
 }
-.ticker_name{
-    height: 4rem;
+
+/* Container for the logo and company name */
+.ticker-container {
+    display: flex;
+    flex-direction: column; /* Stack logo and company name vertically */
+    align-items: flex-start; /* Align both to the left */
+    margin-left: 1rem; /* Space between logo and company name */
 }
-.text_symbol{
-    margin-top: 1rem; 
-    font-size: 20px; 
-    text-align: center; 
-    margin-right: 1.5rem;
+
+
+
+/* Styling for the company name */
+.ticker_name {
+    font-size: 1.2rem; /* Adjust the font size as necessary */
+    margin-top: 0.5rem;
+}
+
+/* Styling for the ticker symbol */
+.ticker_symbol-p {
+    font-size: 13px; /* Adjust the font size as necessary */
+    color: rgba(0, 0, 0, 0.638);
+    margin-top: 0.5rem; /* Space between the company name and ticker symbol */
+}
+
+
+.circle-logo{
+    margin-right: 1rem;
+    width: 50px; /* Set the width of the image */
+    height: 50px; /* Set the height of the image */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover;
+    border: solid 1px rgba(128, 128, 128, 0.763);
 }

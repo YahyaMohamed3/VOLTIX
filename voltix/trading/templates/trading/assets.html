@@ -14,100 +14,30 @@ Voltix - Assets
         
     </div>
     <div class="container text-center">
-        <h3 style="margin-bottom: 4rem;">Popular</h3>
-        <div class="row row-cols-4">
-          <div class="col"><div class="card">
-            <div class="card-body ticker_name">
-                <div class="logo-ticker">
-                    <img src="https://img.logo.dev/ticker/AAPL?token=pk_KpdvfbLjTQWM8HUe7w8eAg&size=30&retina=true" alt="Apple Logo">
-                    <p class="text_symbol">Apple</p>
-                </div>
-            </div>
-          </div></div>
-          <div class="col"><div class="card">
-            <div class="card-body">
-              This is some text within a card body.
-            </div>
-          </div></div>
-          <div class="col"><div class="card">
-            <div class="card-body">
-              This is some text within a card body.
-            </div>
-          </div></div>
-          <div class="col"><div class="card">
-            <div class="card-body">
-              This is some text within a card body.
-            </div>
-          </div></div>
-        </div>
-        <div class="row row-cols-4">
-            <div class="col"><div class="card">
-                <div class="card-body">
-                  This is some text within a card body.
-                </div>
-              </div></div>
-            <div class="col"><div class="card">
-                <div class="card-body">
-                  This is some text within a card body.
-                </div>
-              </div></div>
-            <div class="col"><div class="card">
-                <div class="card-body">
-                  This is some text within a card body.
-                </div>
-              </div></div>
-            <div class="col"><div class="card">
-                <div class="card-body">
-                  This is some text within a card body.
-                </div>
-              </div></div>
+      <h3 style="margin-bottom: 4rem; text-align: left;">Popular Stocks</h3>
+      <div class="row row-cols-4">
+          {% for asset in popular_assets %}
+          <div class="col" style="margin-bottom: 2rem;">
+              <div class="card" >
+                  <div class="card-body">
+                      <!-- Flex container for logo and ticker info -->
+                      <div class="logo-ticker">
+                          <!-- Display the asset logo dynamically -->
+                          <img src="{{ asset.logo_url }}" class="circle-logo" alt="{{ asset.name }} logo">
+                          
+                          <!-- Company Name and Ticker Symbol -->
+                          <div class="ticker-container">
+                              <div class="ticker_name">{{ asset.name }}</div>
+                              <p class="ticker_symbol-p">{{ asset.ticker }}</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
           </div>
-          <div class="row row-cols-4">
-            <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                    </div>
-                    <div class="row row-cols-4">
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-                        <div class="col"><div class="card">
-            <div class="card-body">
-                This is some text within a card body.
-            </div>
-            </div></div>
-          </div>
+          {% endfor %}
       </div>
-
-</div>
+      </div>
+    </div>
+  
 {% endblock %}
   

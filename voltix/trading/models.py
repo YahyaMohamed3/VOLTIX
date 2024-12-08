@@ -1,6 +1,6 @@
 from django.db import models
 
-class popluar_assets(models.Model):
+class PopularAssets(models.Model):
     name = models.CharField(max_length=100)
     ticker = models.CharField(max_length=10)
     category = models.CharField(max_length=10 , choices=[('stock' , 'Stock') , ('crypto' , 'Crypto') , ('etf', 'ETF')])

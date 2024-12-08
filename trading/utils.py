@@ -89,3 +89,6 @@ def fetch_live_price(symbol):
             logger.warning(f"No live data returned for {symbol}.")
     except requests.exceptions.RequestException as e:
         logger.error(f"Error fetching live data for {symbol}: {e}")
+
+
+

@@ -7,5 +7,7 @@ app_name = 'trading'
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
     path('logout/', LogoutView.as_view(), name='logout'),
-    path('markets' , views.markets , name='markets') 
+    path('assets/simulation/<str:category>/<str:ticker>/' , views.simulation_type , name='simulation_type'),
+    path('assets/simulation/historical/<str:category>/<str:ticker>/' , views.historical , name='historical'),
+    path('assets' , views.assets , name='assets')
 ]

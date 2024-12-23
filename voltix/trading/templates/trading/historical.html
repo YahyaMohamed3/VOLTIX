@@ -5,8 +5,59 @@ Voltix - Historical
 {% endblock %}
 
 {% block content %}
-
-
-
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+</head>
+<div class="info">
+    <div class="container-sm text-cont" style="color: white;">
+        <div class="left">
+            <h1 class="text-1">NVDA</h1>
+        </div>
+        <div class="right">
+            <div class="data-grid">
+              <div class="data-item">
+                <span class="label">OPEN</span>
+                <span class="value">{{data.live_data.open |floatformat:2}}</span>
+              </div>
+              <div class="data-item">
+                <span class="label">PREV CLOSE</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">HIGH</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">LOW</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">VOLUME</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">TURNOVER</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">52 WEEK HIGH</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">52 WEEK LOW</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">MARKET CAP</span>
+                <span class="value">248.0</span>
+              </div>
+              <div class="data-item">
+                <span class="label">P/E (TTM)</span>
+                <span class="value">248.0</span>
+              </div>
+            </div>
+          </div>
+    </div>
+</div>
 
 {% endblock %}

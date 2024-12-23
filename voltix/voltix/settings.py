@@ -106,6 +106,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
+CSRF_TRUSTED_ORIGINS = [
+    'https://720b-2600-4808-4311-4300-187b-cbfc-e8a3-c89f.ngrok-free.app',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

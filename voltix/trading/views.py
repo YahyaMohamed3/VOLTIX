@@ -4,6 +4,7 @@ from django.contrib.auth import logout
 from django.urls import reverse
 import requests
 from trading.models import PopularAssets
+from .utils import fetch_stock_data
 
 @login_required
 def dashboard(request):
@@ -27,4 +28,5 @@ def historical(request , ticker, category):
     if request.method == "GET":
         if not ticker and category:
             return redirect("trading:assets")
-        return render(request , "trading/historical.html")
+        data = fetch_stock_data(ticker)
+        return render(request , "trading/historical.html" , {"data" : data})

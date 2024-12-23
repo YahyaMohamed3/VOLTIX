@@ -1,94 +1,77 @@
-import os
 import requests
-from datetime import datetime
-from django.conf import settings
-from .models import Market
-from dotenv import load_dotenv
-import logging
 
-# Load environment variables
-load_dotenv()
-
-# Configure logging
-logger = logging.getLogger(__name__)
-
-def fetch_and_store(symbol, interval="1min"):
-    api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-    if not api_key:
-        logger.error("API key is missing! Please set it in your environment variables.")
-        return
-
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={symbol}&interval={interval}&apikey={api_key}&outputsize=full"
+def fetch_stock_data(symbol):
+    """
+    Fetches live and fundamental stock data from Alpha Vantage and calculates turnover.
     
+    Args:
+        api_key (str): Alpha Vantage API key.
+        symbol (str): Stock symbol to query.
+
+    Returns:
+        dict: Combined stock data including live data, fundamental data, and calculated turnover.
+    """
+    api_key = "X1YKLOCYNSVW5A9R"
     try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raises an error if the request was unsuccessful
-        data = response.json().get(f"Time Series ({interval})", {})
-        
-        if not data:
-            logger.warning(f"No data returned for {symbol}. Check the symbol or try again later.")
-            return
+        # Fetch live stock data
+        live_url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={api_key}"
+        live_response = requests.get(live_url)
+        live_data = live_response.json()
+        print(symbol)
 
-        # Prepare data for bulk insert
-        market_data = []
-        for timestamp, values in data.items():
-            market_data.append(
-                Market(
-                    symbol=symbol,
-                    timestamp=datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S"),
-                    open=float(values["1. open"]),
-                    high=float(values["2. high"]),
-                    low=float(values["3. low"]),
-                    close=float(values["4. close"]),
-                    volume=int(values["5. volume"])
-                )
-            )
-        
-        # Bulk insert the data for efficiency
-        if market_data:
-            Market.objects.bulk_create(market_data)
-            logger.info(f"Historical data for {symbol} stored successfully.")
-        else:
-            logger.warning(f"No valid data to store for {symbol}.")
-    
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error fetching data: {e}")
+        if "Global Quote" not in live_data:
+            raise ValueError("Unable to fetch live data. Check your API key or symbol.")
 
-def fetch_live_price(symbol):
-    api_key = os.getenv("ALPHA_VANTAGE_API_KEY")
-    if not api_key:
-        logger.error("API key is missing! Please set it in your environment variables.")
-        return
+        live_quote = live_data.get("Global Quote", {})
+        live_stock_data = {
+            "price": live_quote.get("05. price"),
+            "change": live_quote.get("09. change"),
+            "change_percent": live_quote.get("10. change percent"),
+            "volume": live_quote.get("06. volume"),
+            "previous_close": live_quote.get("08. previous close"),
+            "open": live_quote.get("02. open"),
+            "high": live_quote.get("03. high"),
+            "low": live_quote.get("04. low"),
+        }
 
-    url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={api_key}"
+        # Fetch fundamental stock data
+        fundamental_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={symbol}&apikey={api_key}"
+        fundamental_response = requests.get(fundamental_url)
+        fundamental_data = fundamental_response.json()
 
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        data = response.json().get("Global Quote", {})
+        if not fundamental_data:
+            raise ValueError("Unable to fetch fundamental data. Check your API key or symbol.")
 
-        if data:
-            price = float(data["05. price"])
-            volume = int(data["06. volume"])
-            timestamp = datetime.now()  # Use current timestamp for live data
+        fundamental_stock_data = {
+            "market_cap": fundamental_data.get("MarketCapitalization"),
+            "pe_ratio": fundamental_data.get("PERatio"),
+            "52_week_high": fundamental_data.get("52WeekHigh"),
+            "52_week_low": fundamental_data.get("52WeekLow"),
+        }
 
-            # Update or create the latest price in the Market model
-            Market.objects.update_or_create(
-                symbol=symbol,
-                timestamp=timestamp,
-                defaults={
-                    "open": price,
-                    "high": price,
-                    "low": price,
-                    "close": price,
-                    "volume": volume
-                }
-            )
-            logger.info(f"Live data for {symbol} updated successfully.")
-        else:
-            logger.warning(f"No live data returned for {symbol}.")
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error fetching live data for {symbol}: {e}")
+        # Calculate turnover
+        try:
+            open_price = float(live_stock_data["open"])
+            high_price = float(live_stock_data["high"])
+            low_price = float(live_stock_data["low"])
+            close_price = float(live_stock_data["price"])
+            volume = int(live_stock_data["volume"])
 
+            average_price = (open_price + high_price + low_price + close_price) / 4
+            turnover = average_price * volume
+        except (ValueError, TypeError) as e:
+            raise ValueError(f"Error calculating turnover: {e}")
 
+        # Combine all data
+        combined_data = {
+            "live_data": live_stock_data,
+            "fundamental_data": fundamental_stock_data,
+            "turnover": turnover,
+        }
 
+        return combined_data
+
+    except requests.RequestException as e:
+        raise ValueError(f"Request error: {e}")
+    except ValueError as e:
+        raise ValueError(e)

@@ -1,66 +1,60 @@
-import requests
-
+import yfinance as yf
 def fetch_stock_data(symbol):
     """
-    Fetches live and fundamental stock data from Alpha Vantage and calculates turnover.
+    Fetches live and fundamental stock data using yfinance and calculates turnover.
     
     Args:
-        api_key (str): Alpha Vantage API key.
         symbol (str): Stock symbol to query.
 
     Returns:
         dict: Combined stock data including live data, fundamental data, and calculated turnover.
     """
-    api_key = "X1YKLOCYNSVW5A9R"
     try:
-        # Fetch live stock data
-        live_url = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={api_key}"
-        live_response = requests.get(live_url)
-        live_data = live_response.json()
-        print(symbol)
+        # Fetch stock data using yfinance
+        stock = yf.Ticker(symbol)
+        history = stock.history(period="5d")  # Fetch data for the last 5 days
+        if history.empty:
+            raise ValueError("No data found for the given symbol and period.")
 
-        if "Global Quote" not in live_data:
-            raise ValueError("Unable to fetch live data. Check your API key or symbol.")
+        # Ensure we have at least two data points for current and previous close
+        if len(history) < 2:
+            raise ValueError("Insufficient data to calculate previous close and changes.")
 
-        live_quote = live_data.get("Global Quote", {})
+        current_close = history["Close"].iloc[-1]  # Current day's close
+        previous_close = history["Close"].iloc[-2]  # Previous day's close
+
+        # Calculate change and change percent
+        change = current_close - previous_close
+        change_percent = (change / previous_close) * 100
+
         live_stock_data = {
-            "price": live_quote.get("05. price"),
-            "change": live_quote.get("09. change"),
-            "change_percent": live_quote.get("10. change percent"),
-            "volume": live_quote.get("06. volume"),
-            "previous_close": live_quote.get("08. previous close"),
-            "open": live_quote.get("02. open"),
-            "high": live_quote.get("03. high"),
-            "low": live_quote.get("04. low"),
+            "price": current_close,
+            "previous_close": previous_close,
+            "change": change,
+            "change_percent": change_percent,
+            "open": history["Open"].iloc[-1],
+            "high": history["High"].iloc[-1],
+            "low": history["Low"].iloc[-1],
+            "volume": history["Volume"].iloc[-1],
         }
 
-        # Fetch fundamental stock data
-        fundamental_url = f"https://www.alphavantage.co/query?function=OVERVIEW&symbol={symbol}&apikey={api_key}"
-        fundamental_response = requests.get(fundamental_url)
-        fundamental_data = fundamental_response.json()
-
-        if not fundamental_data:
-            raise ValueError("Unable to fetch fundamental data. Check your API key or symbol.")
-
+        # Extract fundamental data
+        info = stock.info
         fundamental_stock_data = {
-            "market_cap": fundamental_data.get("MarketCapitalization"),
-            "pe_ratio": fundamental_data.get("PERatio"),
-            "52_week_high": fundamental_data.get("52WeekHigh"),
-            "52_week_low": fundamental_data.get("52WeekLow"),
+            "market_cap": info.get("marketCap"),
+            "pe_ratio": info.get("trailingPE"),
+            "52_week_high": info.get("fiftyTwoWeekHigh"),
+            "52_week_low": info.get("fiftyTwoWeekLow"),
         }
 
         # Calculate turnover
-        try:
-            open_price = float(live_stock_data["open"])
-            high_price = float(live_stock_data["high"])
-            low_price = float(live_stock_data["low"])
-            close_price = float(live_stock_data["price"])
-            volume = int(live_stock_data["volume"])
-
-            average_price = (open_price + high_price + low_price + close_price) / 4
-            turnover = average_price * volume
-        except (ValueError, TypeError) as e:
-            raise ValueError(f"Error calculating turnover: {e}")
+        average_price = (
+            live_stock_data["open"]
+            + live_stock_data["high"]
+            + live_stock_data["low"]
+            + live_stock_data["price"]
+        ) / 4
+        turnover = average_price * live_stock_data["volume"]
 
         # Combine all data
         combined_data = {
@@ -71,7 +65,5 @@ def fetch_stock_data(symbol):
 
         return combined_data
 
-    except requests.RequestException as e:
-        raise ValueError(f"Request error: {e}")
-    except ValueError as e:
-        raise ValueError(e)
+    except Exception as e:
+        raise ValueError(f"Error fetching stock data: {e}")

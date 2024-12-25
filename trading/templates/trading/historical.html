@@ -11,7 +11,11 @@ Voltix - Historical
 <div class="info">
     <div class="container-sm text-cont" style="color: white;">
         <div class="left">
-            <h1 class="text-1">NVDA</h1>
+            <h1 class="text-1">{{ticker}}</h1>
+            <p>{{stock_name}}</p>
+            <P>{{data.live_data.price |floatformat:2}}</P>
+            <P>{{data.live_data.change |floatformat:2 }}</P>
+            <p>{{data.live_data.change_percent |floatformat:2}}</p>
         </div>
         <div class="right">
             <div class="data-grid">
@@ -21,39 +25,39 @@ Voltix - Historical
               </div>
               <div class="data-item">
                 <span class="label">PREV CLOSE</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.live_data.previous_close |floatformat:2}}</span>
               </div>
               <div class="data-item">
                 <span class="label">HIGH</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.live_data.high | floatformat:2}}</span>
               </div>
               <div class="data-item">
                 <span class="label">LOW</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.live_data.low |floatformat:2}}</span>
               </div>
               <div class="data-item">
                 <span class="label">VOLUME</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.live_data.volume}}</span>
               </div>
               <div class="data-item">
                 <span class="label">TURNOVER</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.turnover}}</span>
               </div>
               <div class="data-item">
                 <span class="label">52 WEEK HIGH</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.fundamental_data.52_week_high}}</span>
               </div>
               <div class="data-item">
                 <span class="label">52 WEEK LOW</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.fundamental_data.52_week_low}}</span>
               </div>
               <div class="data-item">
                 <span class="label">MARKET CAP</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.fundamental_data.market_cap}}</span>
               </div>
               <div class="data-item">
                 <span class="label">P/E (TTM)</span>
-                <span class="value">248.0</span>
+                <span class="value">{{data.fundamental_data.pe_ratio |floatformat:2}}</span>
               </div>
             </div>
           </div>

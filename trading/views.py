@@ -29,4 +29,5 @@ def historical(request , ticker, category):
         if not ticker and category:
             return redirect("trading:assets")
         data = fetch_stock_data(ticker)
-        return render(request , "trading/historical.html" , {"data" : data})
+        stock_name = PopularAssets.objects.get(ticker = ticker).name
+        return render(request , "trading/historical.html" , {"data" : data, "stock_name":stock_name , "ticker" : ticker})

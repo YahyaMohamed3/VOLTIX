@@ -1,69 +1,106 @@
 import yfinance as yf
+from datetime import datetime, timedelta
+import pytz
+import pandas as pd
+
+def format_large_number(value):
+    """Formats a large number into M (millions) or T (trillions)."""
+    if value is None:
+        return None
+    if value >= 1_000_000_000_000:  # Trillions
+        return f"{value / 1_000_000_000_000:.2f}T"
+    elif value >= 1_000_000:  # Millions
+        return f"{value / 1_000_000:.2f}M"
+    else:
+        return f"{value:.2f}"
+
 def fetch_stock_data(symbol):
     """
-    Fetches live and fundamental stock data using yfinance and calculates turnover.
-    
+    Fetches live and fundamental stock data using Yahoo Finance, calculates turnover,
+    and returns combined data.
+
     Args:
         symbol (str): Stock symbol to query.
 
     Returns:
-        dict: Combined stock data including live data, fundamental data, and calculated turnover.
+        dict: Combined stock data including live data, fundamental data, market status, and calculated turnover.
     """
     try:
         # Fetch stock data using yfinance
         stock = yf.Ticker(symbol)
-        history = stock.history(period="5d")  # Fetch data for the last 5 days
-        if history.empty:
-            raise ValueError("No data found for the given symbol and period.")
 
-        # Ensure we have at least two data points for current and previous close
-        if len(history) < 2:
-            raise ValueError("Insufficient data to calculate previous close and changes.")
+        # Define the current time and determine market status
+        ny_time = datetime.now(pytz.timezone("America/New_York"))
+        market_open = ny_time.replace(hour=9, minute=30, second=0, microsecond=0)
+        market_close = ny_time.replace(hour=16, minute=0, second=0, microsecond=0)
 
-        current_close = history["Close"].iloc[-1]  # Current day's close
-        previous_close = history["Close"].iloc[-2]  # Previous day's close
+        if ny_time < market_open:
+            market_status = "Pre-Market"
+        elif market_open <= ny_time <= market_close:
+            market_status = "Live Market"
+        else:
+            market_status = "After Hours"
 
-        # Calculate change and change percent
-        change = current_close - previous_close
-        change_percent = (change / previous_close) * 100
+        # Fetch data based on market status
+        if market_status == "After Hours":
+            live_data = stock.history(period="1d", interval="1d")
+        else:
+            live_data = stock.history(period="1d", interval="1m")
 
+        if live_data.empty:
+            raise ValueError("No live data found for the given symbol.")
+
+        # Extract the most recent data row
+        latest_data = live_data.iloc[-1]
+        current_close = latest_data["Close"]
+        open_price = latest_data["Open"]
+        high_price = latest_data["High"]
+        low_price = latest_data["Low"]
+        volume = latest_data["Volume"]
+
+        # Fetch previous close from the stock info
+        info = stock.info
+        previous_close = info.get("previousClose", 0)
+
+        # Calculate price change and percent change
+        price_change = current_close - previous_close
+        percent_change = price_change / previous_close * 100 if previous_close else 0
+
+        # Organize live stock data
         live_stock_data = {
-            "price": current_close,
-            "previous_close": previous_close,
-            "change": change,
-            "change_percent": change_percent,
-            "open": history["Open"].iloc[-1],
-            "high": history["High"].iloc[-1],
-            "low": history["Low"].iloc[-1],
-            "volume": history["Volume"].iloc[-1],
+            "current_price": f"{current_close:.2f}",
+            "previous_close": f"{previous_close:.2f}",
+            "change": f"{price_change:.2f}",
+            "change_percent": f"{percent_change:.2f}%",
+            "open_price": f"{open_price:.2f}",
+            "high_price": f"{high_price:.2f}",
+            "low_price": f"{low_price:.2f}",
+            "volume": format_large_number(volume),
         }
 
-        # Extract fundamental data
-        info = stock.info
+        # Fetch fundamental stock data
         fundamental_stock_data = {
-            "market_cap": info.get("marketCap"),
-            "pe_ratio": info.get("trailingPE"),
-            "52_week_high": info.get("fiftyTwoWeekHigh"),
-            "52_week_low": info.get("fiftyTwoWeekLow"),
+            "market_cap": format_large_number(info.get("marketCap")),
+            "pe_ratio": f"{info.get('trailingPE', 0):.2f}",
+            "52_week_high": f"{info.get('fiftyTwoWeekHigh', 0):.2f}",
+            "52_week_low": f"{info.get('fiftyTwoWeekLow', 0):.2f}",
         }
 
         # Calculate turnover
-        average_price = (
-            live_stock_data["open"]
-            + live_stock_data["high"]
-            + live_stock_data["low"]
-            + live_stock_data["price"]
-        ) / 4
-        turnover = average_price * live_stock_data["volume"]
+        average_price = (open_price + high_price + low_price + current_close) / 4
+        turnover = average_price * volume if volume else 0
 
         # Combine all data
         combined_data = {
             "live_data": live_stock_data,
             "fundamental_data": fundamental_stock_data,
-            "turnover": turnover,
+            "turnover": format_large_number(turnover),
+            "market_status": market_status,
+            "data_fetched_at": ny_time.strftime("%Y-%m-%d %H:%M:%S %Z"),
         }
 
         return combined_data
 
     except Exception as e:
         raise ValueError(f"Error fetching stock data: {e}")
+    

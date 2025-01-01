@@ -5,14 +5,17 @@ Voltix - Historical
 {% endblock %}
 
 {% block content %}
+
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {% load static %}
+    <script type="module" src="{% static 'trading/js/historical.js' %}"></script>
 </head>
 <div class="info">
     <div class="container-sm text-cont" style="color: white;">
         <div class="left">
-            <h1 class="me-3 text-1">{{ticker}}</h1>
+            <h1 class="me-3 text-1" id="ticker">{{ticker}}</h1>
             <h3 class="text-1" style="font-size: 24px; color: rgba(255, 255, 255, 0.591);">{{stock_name}}</h3>
             <div class="price-metrics" style="display: flex; align-items: center; margin-left: -15px;">
               <p id="arrow" style="font-size: 70px;"></p>
@@ -72,10 +75,10 @@ Voltix - Historical
 </div>
 <div class="conatiner" style="padding:2rem;">
   <div class="chart-form" style="display: flex; justify-content: space-between; gap: 2rem;">
-    <div class="chart" style="width: 100%;">
-      <canvas id="myChart" width="100%" height="800px"></canvas>
+    <div class="chart" id="chart-div"style="width: 100%;">
+      <canvas id="myChart" width="700px" height="600px" style="box-shadow:  0 4px 8px rgba(0, 0, 0, 0.1); border-radius: 20px; border: 1px solid rgba(156, 156, 156, 0.341); padding-top: 1rem;"></canvas>
     </div>
-    <div class="card" style="width: 30%; box-shadow:  0 4px 8px rgba(0, 0, 0, 0.1); height: 30rem;">
+    <div class="form-cont card" style="width: 30%; box-shadow:  0 4px 8px rgba(0, 0, 0, 0.1); height: 30rem; border-color: rgba(220, 220, 220, 0.831); border-radius: 35px;">
       <div class="card-body">
         <h5 class="card-title" style="text-align: center;">Simulation Settings</h5>
         <div class="form-group">
@@ -94,167 +97,4 @@ Voltix - Historical
 </div>
 </div>
 </div>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const percentChangeElement = document.querySelector('#percent-change');
-      const percentChange = parseFloat(percentChangeElement.textContent);
-  
-      const color = percentChange < 0 ? '#FF506A' : '#08F6B5';
-      const elementsToColor = ['#percent-change', '#price', '#change', '#arrow'];
-  
-      elementsToColor.forEach(selector => {
-          document.querySelector(selector).style.color = color;
-      });
-  
-      // Update the arrow based on the change value
-      const changeElement = document.querySelector('#change');
-      const change = parseFloat(changeElement.textContent);
-      const arrowElement = document.querySelector('#arrow');
-      arrowElement.textContent = change > 0 ? '↑' : '↓';
-  
-      const ctx = document.getElementById('myChart').getContext('2d');
-let myChart = new Chart(ctx, {
-    type: 'line', // Change this to the type of chart you want
-    data: {
-        labels: [], // Empty initially
-        datasets: [{
-            label: 'Close Prices',
-            data: [], // Empty initially
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
-            borderColor: 'rgba(0, 0, 0, 1)',
-            borderWidth: 2,
-            pointBackgroundColor: 'rgba(0, 0, 0, 1)',
-            pointRadius: 0, // Hides the dots by default
-            pointHoverRadius: 6,
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgba(0, 0, 0, 1)'
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Date',
-                    color: '#ffffff'
-                },
-                ticks: { color: '#ffffff' },
-                grid: { display: false } // Remove background lines
-            },
-            y: {
-                position: 'right', // Position prices on the right
-                title: {
-                    display: true,
-                    text: 'Price',
-                    color: '#ffffff'
-                },
-                beginAtZero: true,
-                ticks: { color: '#ffffff' },
-                grid: { display: false } // Remove background lines
-            }
-        },
-        plugins: {
-            legend: {
-                labels: { color: '#ffffff' }
-            },
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        let label = context.dataset.label || '';
-                        if (label) {
-                            label += ': ';
-                        }
-                        label += context.parsed.y;
-                        return label;
-                    },
-                    afterLabel: function(context) {
-                        const index = context.dataIndex;
-                        const percentChange = context.chart.data.datasets[0].percentChanges[index];
-                        const volume = context.chart.data.datasets[0].volumes[index];
-                        return `Percent Change: ${percentChange}%\nVolume: ${volume}`;
-                    }
-                }
-            }
-        },
-        layout: {
-            padding: {
-                left: 10,
-                right: 10,
-                top: 10,
-                bottom: 10
-            }
-        }
-    }
-});
-  
-      const startDateInput = document.querySelector('#start-date');
-      const endDateInput = document.querySelector('#end-date');
-      const selectDateBtn = document.querySelector('#select-date-btn');
-  
-      // Function to handle date change and fetch data
-      function sendDatesToBackend() {
-          const startDate = startDateInput.value;
-          const endDate = endDateInput.value;
-          const symbol = '{{ ticker }}';
-  
-          // Check if both dates are selected
-          if (startDate && endDate) {
-              getHistoricalData(symbol, startDate, endDate);
-          }
-      }
-  
-      // Add event listener to the button
-      selectDateBtn.addEventListener('click', function(event) {
-          event.preventDefault(); // Prevent form submission
-          sendDatesToBackend();
-      });
-  
-      // Fetch historical data from the backend
-      function getHistoricalData(symbol, startDate, endDate) {
-          const url = `/trading/api/stock-data/?symbol=${symbol}&start_date=${startDate}&end_date=${endDate}`;
-  
-          fetch(url, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json'
-              }
-          })
-          .then(response => response.text()) // Get raw response text
-          .then(text => {
-              console.log('Raw response text:', text); // Debugging: log the raw response text
-              try {
-                  return JSON.parse(text); // Parse the JSON
-              } catch (e) {
-                  console.error('Error parsing JSON:', e);
-                  throw e; // Re-throw the error to be caught in the catch block
-              }
-          })
-          .then(data => {
-              console.log('Fetched data:', data); // Debugging: log the fetched data
-              // Update the chart with the fetched data
-              updateChart(data);
-          })
-          .catch(error => {
-              console.error('Error:', error);
-          });
-      }
-  
-  function updateChart(data) {
-    if (data.dates && data.close_prices) {
-        myChart.data.labels = data.dates;
-        myChart.data.datasets[0].data = data.close_prices;
-        myChart.data.datasets[0].percentChanges = data.percent_changes || [];
-        myChart.data.datasets[0].volumes = data.volumes || [];
-        myChart.update();
-    } else {
-        console.error('Invalid data format:', data);
-    }
-}
-  });
-  </script>
-  
-
 {% endblock %}

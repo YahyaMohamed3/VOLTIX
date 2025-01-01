@@ -8,8 +8,8 @@ from .utils import fetch_stock_data
 import yfinance as yf
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from .utils import format_large_number
 import pandas as pd
+from datetime import datetime, timedelta
 
 @login_required
 def dashboard(request):
@@ -40,22 +40,62 @@ def historical(request , ticker, category):
 @login_required
 @require_GET
 def stock_data(request):
-    symbol = request.GET.get('symbol')
-    start_date = request.GET.get('start_date')
-    end_date = request.GET.get('end_date')
-    if not symbol or not start_date or not end_date:
-        return JsonResponse({'error': 'Missing required parameters'}, status=400)
-
     try:
+        symbol = request.GET.get('symbol')
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+
+        if not symbol or not start_date or not end_date:
+            return JsonResponse({'error': 'Missing required parameters'}, status=400)
+
+        start_date_dt = datetime.strptime(start_date, '%Y-%m-%d')
+        end_date_dt = datetime.strptime(end_date, '%Y-%m-%d')
+
+        # Try to get reference price by looking back up to 5 trading days
+        reference_price = None
         stock = yf.Ticker(symbol)
-        data = stock.history(start=start_date, end=end_date)
-        data['Percent Change'] = data['Close'].pct_change() * 100
+        for days_back in range(1, 6):
+            look_back_date = (start_date_dt - timedelta(days=days_back)).strftime('%Y-%m-%d')
+            look_back_end = (start_date_dt - timedelta(days=days_back-1)).strftime('%Y-%m-%d')
+            
+            prev_day_data = stock.history(start=look_back_date, end=look_back_end)
+            
+            if not prev_day_data.empty:
+                reference_price = prev_day_data['Close'].iloc[-1]
+                break
+
+        if reference_price is None:
+            return JsonResponse({'error': 'Could not find reference price in the last 5 trading days'}, status=404)
+
+        # Calculate the time period
+        time_period = end_date_dt - start_date_dt
+
+        if time_period.days >= 30:
+            # Fetch daily data if the time period is a month or longer
+            data = stock.history(start=start_date, end=end_date, interval='1d')
+            date_format = '%Y-%m-%d'  # Format for daily data
+        else:
+            # Fetch data at three different times within each day if the time period is less than a month
+            data = stock.history(start=start_date, end=end_date, interval='90m')
+            date_format = '%Y-%m-%d %H:%M:%S'  # Format for intraday data
+
+        if data.empty:
+            return JsonResponse({'error': 'No data available for the specified date range'}, status=404)
+
+        # Calculate percent change based on the reference price
+        data['Percent Change'] = ((data['Close'] - reference_price) / reference_price) * 100
+
+        # Prepare the data for JSON response
         raw_data = {
-            'dates': data.index.strftime('%Y-%m-%d').tolist(),
+            'dates': data.index.strftime(date_format).tolist(),
             'close_prices': [round(price, 2) for price in data['Close'].tolist()],
             'percent_changes': [round(change, 2) if not pd.isna(change) else None for change in data['Percent Change'].tolist()],
-            'volumes': [format_large_number(volume) for volume in data['Volume'].tolist()]
+            'volumes': [f"{int(round(volume)):,}" for volume in data['Volume'].tolist()]
         }
         return JsonResponse(raw_data)
+
+    except ValueError as ve:
+        return JsonResponse({'error': f"Invalid input: {ve}"}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+

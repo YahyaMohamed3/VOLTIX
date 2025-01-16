@@ -15,7 +15,7 @@ export function createChart(canvasId) {
                 borderColor: '#000000',
                 backgroundColor: gradient,
                 fill: true,
-                tension: 0.4,
+                tension: 0.2,
                 borderWidth: 2,
                 pointRadius: 0,
                 pointHoverRadius: 6,

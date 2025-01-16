@@ -147,3 +147,19 @@ body{
     display: block;
     opacity: 1;
 }
+
+.after-date{
+    display: none;
+    transition: opacity 0.9s ease-in-out;
+    opacity: 0;
+}
+.after-date.show{
+    display: block;
+    opacity: 1;
+}
+.arrow-icon{
+    margin-bottom: 1rem;
+    font-size: 22px;
+    color: #b3b3b3a0;
+    cursor: pointer;
+}

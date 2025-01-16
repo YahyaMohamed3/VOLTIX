@@ -98,4 +98,9 @@ def stock_data(request):
         return JsonResponse({'error': f"Invalid input: {ve}"}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+    
 
+@login_required
+def simulation(request):
+    return None

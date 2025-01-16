@@ -9,8 +9,10 @@ Voltix - Historical
 <head>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     {% load static %}
     <script type="module" src="{% static 'trading/js/historical.js' %}"></script>
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
 <div class="info">
     <div class="container-sm text-cont" style="color: white;">
@@ -82,17 +84,49 @@ Voltix - Historical
       <div class="card-body">
         <h5 class="card-title" style="text-align: center;">Simulation Settings</h5>
         <div class="form-group">
+          <div class="date-div">
+            <div class="form-floating mb-3">
+              <input type="date" class="form-control" id="start-date">
+              <label for="floatingInput">Start date</label>
+            </div>
+            <div class="form-floating mb-3">
+              <input type="date" class="form-control" id="end-date">
+              <label for="floatingPassword">End date</label>
+            </div>
+          </div>
+          <div class="after-date">
+            <i class="fas fa-arrow-left arrow-icon" id="back-arrow"></i>
           <div class="form-floating mb-3">
-            <input type="date" class="form-control" id="start-date">
-            <label for="floatingInput">Start date</label>
+            <input type="number" class="form-control" id="initial-capital">
+            <label for="initial-amount">Intial Capital</label>
           </div>
-          <div class="form-floating">
-            <input type="date" class="form-control" id="end-date">
-            <label for="floatingPassword">End date</label>
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="fee">
+            <label for="initial-amount">fee per trade %</label>
           </div>
+          <div class="mb-3">
+            <select class="form-select" id="risk">
+              <option selected disabled>Select Risk Tolerence</option>
+              <option value="Low">Low</option>
+              <option value="Moderate">Moderate</option>
+              <option value="High">High</option> 
+              </select>
+          </div>
+          <div class="mb-3">
+            <select class="form-select" id="strategy">
+              <option selected disabled>Select Trading Strategy</option>
+              <option value="MAC">Moving Average Crossover</option>
+              <option value="MT">Momentum Trading</option>
+              <option value="MR">Mean Reversion</option>
+              <option value="BS">Breakout Strategy</option> 
+              </select>
+          </div>
+        </div>
           <div style="display: flex; justify-content: center; padding-top: 20px;">
-        <button type="submit" class="btn btn-dark" id="select-date-btn">Select date</button>
-      </div>
+            <button type="submit" class="btn btn-dark" id="start-btn" style="display: none;">Start</button>
+            <button type="submit" class="btn btn-dark" id="select-date-btn">Select date</button>
+          </div>
+      <p id="message" style="color: red; padding-top: 10px; display: none; text-align: center;"></p>
       </div>
 </div>
 </div>

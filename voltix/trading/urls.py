@@ -12,4 +12,5 @@ urlpatterns = [
     path('assets' , views.assets , name='assets'),
      # API
     path('api/stock-data/', views.stock_data, name='stock_data'),
+    path('api/simulation/',views.simulation, name='simulation'),
 ]

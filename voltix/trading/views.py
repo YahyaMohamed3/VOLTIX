@@ -10,6 +10,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 import pandas as pd
 from datetime import datetime, timedelta
+from json import JSONDecodeError
+import json 
+from .forms import SimulationForm
 
 @login_required
 def dashboard(request):
@@ -101,6 +104,35 @@ def stock_data(request):
     
     
 
-@login_required
 def simulation(request):
-    return None
+    if request.method == 'POST':
+        try:
+            # Parse JSON body
+            body = json.loads(request.body)
+
+            # Bind data to the form
+            form = SimulationForm(body)
+            
+            # Validate the form
+            if form.is_valid():
+                # Access cleaned data
+                data = form.cleaned_data
+                symbol = data['symbol']
+                start_date = data['start_date']
+                end_date = data['end_date']
+                initial_capital = data['initial_capital']
+                fee = data['fee']
+                risk = data['risk']
+                strategy = data['strategy']
+
+                # Perform simulation logic here (e.g., run the strategy, store results)
+                return JsonResponse({'message': 'Simulation processed successfully', 'data': data})
+
+            else:
+                # Return form errors
+                return JsonResponse({'error': 'Invalid input', 'details': form.errors}, status=400)
+
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+
+    return JsonResponse({'error': 'Invalid HTTP method'}, status=405)

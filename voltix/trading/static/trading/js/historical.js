@@ -110,9 +110,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const risk = riskInput.value;
         const strategy = strategyInput.value;
         const symbol = document.querySelector('#ticker').textContent;
-
+    
         if (initialCapital && fee && risk && strategy) {
-            fetch(`/trading/api/simulation/?symbol=${symbol}&start_date=${startDate}&end_date=${endDate}&intial_capital=${initialCapital}&fee=${fee}&risk=${risk}&strategy=${strategy}` , {
+            fetch(`/trading/api/simulation/?symbol=${symbol}&start_date=${startDate}&end_date=${endDate}&intial_capital=${initialCapital}&fee=${fee}&risk=${risk}&strategy=${strategy}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -123,9 +123,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     initial_capital: initialCapital, fee, risk, strategy
                 })
             })
-            .then(response => response.json())
-            .then(data => console.log('Strategy data:', data))
-            .catch(error => console.error('Error fetching strategy data:', error));
+            .then(response => {
+                if (!response.ok) {
+                    // If response status is not OK, show the error message
+                    return response.json().then(data => {
+                        showMessage(data.error || 'An error occurred while processing the request');
+                        throw new Error('Request failed');
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Strategy data:', data);
+                // Handle successful response if needed
+            })
+            .catch(error => {
+                console.error('Error fetching strategy data:', error);
+                // Optionally, show a fallback error message if something goes wrong in the fetch process
+                showMessage('An unexpected error occurred. Please try again.');
+            });
         } else {
             showMessage('Please fill all the fields');
         }

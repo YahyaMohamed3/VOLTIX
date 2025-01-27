@@ -121,14 +121,15 @@ def simulation(request):
                 symbol = data['symbol']
                 start_date = data['start_date']
                 end_date = data['end_date']
-                initial_capital = data['initial_capital']
-                fee = data['fee']
+                initial_capital = float(data['initial_capital'])
+                fee = float(data['fee'] / 100)
+                print(fee)
                 risk = data['risk']
                 strategy = data['strategy']
 
                 if strategy in ["MAC", "MT", "MR","BS"]:
                     #fetch stock data 
-                    simulation_results  = run_simulation(symbol, start_date, end_date, initial_capital, fee, risk, strategy)
+                    simulation_results  = run_simulation(symbol, start_date, end_date, initial_capital, risk, fee, strategy)
 
 
                 # Perform simulation logic here (e.g., run the strategy, store results)

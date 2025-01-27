@@ -1,104 +1,159 @@
-import pandas as pd 
+import pandas as pd
 import numpy as np
-from utils import calculate_performance_metrics
-
+from ..utils import calculate_performance_metrics
 
 def MovingAverage(data, initial_capital, risk_tolerance, fee_percentage):
-    """Advanced trading strategy with enhanced risk management."""
+    """
+    Enhanced moving average crossover strategy with improved risk management and trend confirmation.
+    
+    Args:
+        data (pd.DataFrame): Historical price data with multi-level columns from yfinance
+        initial_capital (float): Starting capital for trading
+        risk_tolerance (str): Risk tolerance level ('High', 'Moderate', 'Low')
+        fee_percentage (float): Trading fee as percentage
+    """
     capital = float(initial_capital)
     position = 0.0
-    # Risk allocation with more nuanced parameters
+    entry_price = 0.0
+    monthly_trades = 0
+    current_month = None
+    
     risk_profiles = {
-        'High': {'allocation': 0.9, 'stop_loss': 0.05, 'take_profit': 0.15},
-        'Moderate': {'allocation': 0.5, 'stop_loss': 0.03, 'take_profit': 0.10},
-        'Low': {'allocation': 0.3, 'stop_loss': 0.02, 'take_profit': 0.07}
+        'High': {
+            'allocation': 0.8,
+            'stop_loss': 0.05,
+            'trailing_stop': 0.03,
+            'max_monthly_trades': 4,
+            'min_holding_days': 5
+        },
+        'Moderate': {
+            'allocation': 0.5,
+            'stop_loss': 0.04,
+            'trailing_stop': 0.02,
+            'max_monthly_trades': 3,
+            'min_holding_days': 7
+        },
+        'Low': {
+            'allocation': 0.3,
+            'stop_loss': 0.03,
+            'trailing_stop': 0.015,
+            'max_monthly_trades': 2,
+            'min_holding_days': 10
+        }
     }
 
     if risk_tolerance not in risk_profiles:
         raise ValueError("Invalid risk tolerance level")
 
-    # Advanced technical indicators
-    data['short_ma'] = data['Close'].rolling(window=5).mean()
-    data['long_ma'] = data['Close'].rolling(window=20).mean()
-    data['atr'] = data['Close'].diff().abs().rolling(window=14).mean()
-    delta = data['Close'].diff()
-    gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
-    rs = gain / loss
-    data['rsi'] = 100 - (100 / (1 + rs))
-
+    # Create a working DataFrame with the correct price columns
+    df = pd.DataFrame()
+    df['Close'] = data['Close']['AAPL']
+    df['High'] = data['High']['AAPL']
+    df['Low'] = data['Low']['AAPL']
+    df['Volume'] = data['Volume']['AAPL']
+    
+    # Enhanced technical indicators
+    df['short_ma'] = df['Close'].rolling(window=10).mean()  # Faster MA for better responsiveness
+    df['long_ma'] = df['Close'].rolling(window=30).mean()   # Longer MA for better trend confirmation
+    
+    # Calculate ATR
+    df['tr'] = np.maximum(
+        df['High'] - df['Low'],
+        np.maximum(
+            abs(df['High'] - df['Close'].shift(1)),
+            abs(df['Low'] - df['Close'].shift(1))
+        )
+    )
+    df['atr'] = df['tr'].rolling(window=14).mean()
+    
+    # Volume analysis
+    df['volume_ma'] = df['Volume'].rolling(window=20).mean()
+    df['volume_ratio'] = df['Volume'] / df['volume_ma']
+    
     trades = []
-    peak_price = 0
-    entry_price = 0
-
-    for i in range(1, len(data)):
-        if pd.isna(data['short_ma'].iloc[i]) or pd.isna(data['long_ma'].iloc[i]):
-            continue
-
-        # Scalar values
-        close_price = float(data['Close'].iloc[i])
-        short_ma = float(data['short_ma'].iloc[i])
-        long_ma = float(data['long_ma'].iloc[i])
-        rsi = float(data['rsi'].iloc[i])
-
-        risk_config = risk_profiles[risk_tolerance]
-
-        # Advanced buy conditions with multiple filters
+    highest_price = 0
+    days_in_trade = 0
+    
+    for i in range(30, len(df)):
+        config = risk_profiles[risk_tolerance]
+        trade_date = df.index[i]
+        
+        # Reset monthly trade counter
+        if current_month != trade_date.month:
+            current_month = trade_date.month
+            monthly_trades = 0
+        
+        close_price = float(df['Close'].iloc[i])
+        short_ma = float(df['short_ma'].iloc[i])
+        long_ma = float(df['long_ma'].iloc[i])
+        volume_ratio = float(df['volume_ratio'].iloc[i])
+        atr = float(df['atr'].iloc[i])
+        
+        # Update trailing stop if in position
+        if position > 0 and close_price > highest_price:
+            highest_price = close_price
+        
+        # Enhanced buy conditions
         buy_condition = (
-            short_ma > long_ma and  # Trend confirmation
-            rsi < 50 and  # Avoid overbought conditions
-            position == 0  # No existing position
+            position == 0 and
+            short_ma > long_ma and  # Basic MA crossover
+            short_ma > df['short_ma'].iloc[i-1] and  # Rising short MA
+            volume_ratio > 1.2 and  # Above average volume
+            monthly_trades < config['max_monthly_trades']  # Monthly trade limit
         )
 
-        # Sell conditions with stop-loss and take-profit
+        # Enhanced sell conditions
         sell_condition = (
-            short_ma < long_ma or  # Trend reversal
-            (position > 0 and entry_price > 0 and (
-                # Stop-loss triggered
-                close_price <= entry_price * (1 - risk_config['stop_loss']) or
-                # Take-profit triggered
-                close_price >= entry_price * (1 + risk_config['take_profit'])
-            ))
+            position > 0 and
+            (
+                # Regular MA crossover exit
+                (short_ma < long_ma and days_in_trade >= config['min_holding_days']) or
+                # Stop loss
+                close_price <= entry_price * (1 - config['stop_loss']) or
+                # Trailing stop
+                close_price <= highest_price * (1 - config['trailing_stop'])
+            )
         )
 
-        # Buy logic with dynamic position sizing
         if buy_condition:
-            max_position_value = capital * risk_config['allocation']
-            position_size = max_position_value / close_price
+            # Position sizing with ATR-based risk
+            risk_amount = capital * config['allocation']
+            position_size = risk_amount / (close_price * (1 + config['stop_loss']))
+            position_size = min(position_size, capital / close_price)
             
-            capital -= max_position_value
-            fee = max_position_value * fee_percentage
-            capital -= fee
+            entry_cost = position_size * close_price
+            fee = entry_cost * fee_percentage
+            capital -= (entry_cost + fee)
             position = position_size
             entry_price = close_price
-            peak_price = close_price
+            highest_price = close_price
+            days_in_trade = 0
+            monthly_trades += 1
             
             trades.append({
                 "action": "BUY",
-                "date": data['Date'].iloc[i],
+                "date": trade_date,
                 "price": close_price,
                 "entry_price": close_price,
                 "capital_left": capital,
                 "position": position,
                 "reasons": {
-                    "short_ma": short_ma,
-                    "long_ma": long_ma,
-                    "rsi": rsi,
                     "trend": "Short MA crossed above Long MA",
-                    "rsi_condition": "RSI below 50 indicating potential upside"
+                    "momentum": f"Rising short MA: {round(short_ma - df['short_ma'].iloc[i-1], 2)}",
+                    "volume": f"Above average: {round(volume_ratio, 2)}x",
+                    "risk_amount": round(risk_amount, 2)
                 }
             })
             
-        elif sell_condition and position > 0:
-            sell_value = position * close_price
-            capital += sell_value
-            fee = sell_value * fee_percentage
-            capital -= fee
+        elif sell_condition:
+            exit_value = position * close_price
+            fee = exit_value * fee_percentage
+            capital += (exit_value - fee)
             profit_loss = ((close_price - entry_price) / entry_price) * 100
             
             trades.append({
                 "action": "SELL",
-                "date": data['Date'].iloc[i],
+                "date": trade_date,
                 "price": close_price,
                 "entry_price": entry_price,
                 "exit_price": close_price,
@@ -106,17 +161,19 @@ def MovingAverage(data, initial_capital, risk_tolerance, fee_percentage):
                 "capital_left": capital,
                 "position": 0,
                 "reasons": {
-                    "short_ma": short_ma,
-                    "long_ma": long_ma,
-                    "rsi": rsi,
                     "trend": "Short MA crossed below Long MA" if short_ma < long_ma else None,
-                    "stop_loss": close_price <= entry_price * (1 - risk_config['stop_loss']),
-                    "take_profit": close_price >= entry_price * (1 + risk_config['take_profit'])
+                    "stop_loss": close_price <= entry_price * (1 - config['stop_loss']),
+                    "trailing_stop": close_price <= highest_price * (1 - config['trailing_stop']),
+                    "days_held": days_in_trade
                 }
             })
             
             position = 0.0
-            entry_price = 0
-            peak_price = 0
+            entry_price = 0.0
+            highest_price = 0
+            days_in_trade = 0
+            
+        if position > 0:
+            days_in_trade += 1
 
     return trades, calculate_performance_metrics(initial_capital, capital, trades)

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from utils import calculate_performance_metrics
+from ..utils import calculate_performance_metrics
 
 def Momentum(data, initial_capital, risk_tolerance, fee_percentage):
     """

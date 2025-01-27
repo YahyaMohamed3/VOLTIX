@@ -1,7 +1,8 @@
-import yfinance as yf
+import yfinance as yf # type: ignore
 from datetime import datetime, timedelta
 import pytz
 import pandas as pd
+import numpy as np
 
 def format_large_number(value):
     """Formats a large number into M (millions) or T (trillions)."""
@@ -103,4 +104,43 @@ def fetch_stock_data(symbol):
 
     except Exception as e:
         raise ValueError(f"Error fetching stock data: {e}")
+
+def calculate_performance_metrics(initial_capital, final_capital, trades):
+    """Calculate comprehensive trading performance metrics."""
+    # Basic metrics
+    total_return = (final_capital - initial_capital) / initial_capital * 100
+    total_trades = len(trades)
+    buy_trades = sum(1 for trade in trades if trade['action'] == 'BUY')
+    sell_trades = sum(1 for trade in trades if trade['action'] == 'SELL')
     
+    # Profit per trade
+    trade_profits = []
+    current_position = 0
+    entry_price = 0
+    for trade in trades:
+        if trade['action'] == 'BUY':
+            current_position = trade['position']
+            entry_price = trade['price']
+        elif trade['action'] == 'SELL':
+            trade_profit = (trade['price'] - entry_price) / entry_price * 100
+            trade_profits.append(trade_profit)
+            current_position = 0
+    
+    # Advanced metrics
+    avg_trade_profit = np.mean(trade_profits) if trade_profits else 0
+    win_rate = sum(1 for profit in trade_profits if profit > 0) / len(trade_profits) * 100 if trade_profits else 0
+    max_drawdown = min(trade_profits) if trade_profits else 0
+    
+    return {
+        'total_return_percentage': round(total_return, 2),
+        'final_capital': round(final_capital, 2),
+        'total_trades': total_trades,
+        'buy_trades': buy_trades,
+        'sell_trades': sell_trades,
+        'average_trade_profit_percentage': round(avg_trade_profit, 2),
+        'win_rate_percentage': round(win_rate, 2),
+        'max_drawdown_percentage': round(max_drawdown, 2)
+    }
+
+
+

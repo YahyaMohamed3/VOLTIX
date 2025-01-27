@@ -5,7 +5,7 @@ from django.urls import reverse
 import requests
 from trading.models import PopularAssets
 from .utils import fetch_stock_data
-import yfinance as yf
+import yfinance as yf # type: ignore
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 import pandas as pd
@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 from json import JSONDecodeError
 import json 
 from .forms import SimulationForm
+from .simulation import run_simulation
 
 @login_required
 def dashboard(request):
@@ -124,6 +125,11 @@ def simulation(request):
                 fee = data['fee']
                 risk = data['risk']
                 strategy = data['strategy']
+
+                if strategy in ["MAC", "MT", "MR","BS"]:
+                    #fetch stock data 
+                    simulation_results  = run_simulation(symbol, start_date, end_date, initial_capital, fee, risk, strategy)
+
 
                 # Perform simulation logic here (e.g., run the strategy, store results)
                 return JsonResponse({'message': 'Simulation processed successfully', 'data': data})

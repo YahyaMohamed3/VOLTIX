@@ -123,7 +123,6 @@ def simulation(request):
                 end_date = data['end_date']
                 initial_capital = float(data['initial_capital'])
                 fee = float(data['fee'] / 100)
-                print(fee)
                 risk = data['risk']
                 strategy = data['strategy']
 

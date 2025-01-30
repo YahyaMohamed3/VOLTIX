@@ -1,0 +1,51 @@
+{% extends "trading/base.html" %}
+
+{% block title %}
+Voltix - Analytics
+{% endblock %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Simulation Results</h2>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Simulation Date</th>
+                <th scope="col">Strategy</th>
+                <th scope="col">Total Return (%)</th>
+            </tr>
+        </thead>
+        <tbody id="simulationTableBody">
+            <!-- Data will be inserted dynamically -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Sample simulation data
+    const simulations = [
+        { date: "2024-01-31", strategy: "MACD Crossover", return: "12.5%" },
+        { date: "2024-02-15", strategy: "RSI Overbought/Oversold", return: "-3.2%" },
+        { date: "2024-03-05", strategy: "Moving Average Cross", return: "8.7%" },
+        { date: "2024-04-10", strategy: "Momentum Strategy", return: "5.4%" }
+    ];
+
+    // Function to populate table dynamically
+    function loadSimulationData() {
+        const tableBody = document.getElementById("simulationTableBody");
+
+        simulations.forEach(sim => {
+            let row = `<tr>
+                <td>${sim.date}</td>
+                <td>${sim.strategy}</td>
+                <td>${sim.return}</td>
+            </tr>`;
+            tableBody.innerHTML += row;
+        });
+    }
+     // Load data when the page loads
+     document.addEventListener("DOMContentLoaded", loadSimulationData);
+</script>
+
+{% endblock %}

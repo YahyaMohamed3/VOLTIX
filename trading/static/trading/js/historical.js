@@ -162,4 +162,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    function plotMetrics(data){
+        
+    }
 });

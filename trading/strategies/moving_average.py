@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from ..utils import calculate_performance_metrics
+from ..metrics import calculate_performance_metrics
 
 def MovingAverage(data, initial_capital, risk_tolerance, fee_percentage, ticker, 
                  short_window=10, long_window=30, min_volume=1e6):

@@ -81,9 +81,6 @@ def run_simulation(
         if not trades and not performance:
             print(f"Warning: No trades executed for {symbol} from {start_date} to {end_date}")
         
-        print(trades)
-        print(performance)
-        
         return trades, performance
         
     except Exception as e:

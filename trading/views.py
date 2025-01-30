@@ -128,7 +128,8 @@ def simulation(request):
 
                 if strategy in ["MAC", "MT", "MR","BS"]:
                     #fetch stock data 
-                    simulation_results  = run_simulation(symbol, start_date, end_date, initial_capital, risk, fee, strategy)
+                    trades , performace  = run_simulation(symbol, start_date, end_date, initial_capital, risk, fee, strategy)
+                    print(performace)
 
 
                 # Perform simulation logic here (e.g., run the strategy, store results)

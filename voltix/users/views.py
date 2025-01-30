@@ -35,7 +35,6 @@ def login(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 auth_login(request, user)
-                print(reverse('trading:dashboard'))
                 return JsonResponse({'redirect_url': reverse('trading:dashboard')})
             else:
                 return JsonResponse({'error': 'Invalid credentials'}, status=400)

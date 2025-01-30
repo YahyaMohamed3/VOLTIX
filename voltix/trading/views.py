@@ -143,3 +143,10 @@ def simulation(request):
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
 
     return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+
+
+def strategies(request):
+    return render(request , "trading/strategies.html")
+
+def analytics(request):
+    return render(request , "trading/analytics.html")

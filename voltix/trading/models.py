@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.contrib.postgres.fields import JSONField
 
 class PopularAssets(models.Model):
     name = models.CharField(max_length=100)
@@ -86,6 +87,36 @@ class StrategyMetrics(models.Model):
 
     def __str__(self):
         return f"Metrics for {self.simulation}"
+    
+
+class Trade(models.Model):
+    ACTION_CHOICES = [
+        ('BUY', 'Buy'),
+        ('SELL', 'Sell')
+    ]
+
+    simulation = models.ForeignKey(
+        Simulation, 
+        on_delete=models.CASCADE,
+        related_name='trades'
+    )
+    action = models.CharField(max_length=4, choices=ACTION_CHOICES)
+    date = models.DateTimeField()
+    price = models.FloatField()
+    size = models.FloatField()
+    position = models.FloatField()
+    capital_remaining = models.FloatField()
+    reasons = JSONField()
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['simulation', 'date']),
+            models.Index(fields=['action']),
+        ]
+        ordering = ['date']
+
+    def __str__(self):
+        return f"{self.simulation.id} - {self.action}@{self.price} - {self.date.date()}"
 
 
     
